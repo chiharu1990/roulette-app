@@ -5,7 +5,42 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #aee6ae;
+  color:#131a13;
 }
+.roulette-body{
+  display: grid;
+  place-content: center;
+  place-items: center;
+  width: 100%;
+  height: 100vh;
+}
+
+h1{
+  margin-bottom: 48px;
+}
+
+.name{
+  font-size: 8em;
+  border: solid 2px #273327;
+  margin: 0 0 48px;
+  padding: 2rem 4rem;
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+  width: 4em;
+}
+
+.roulette-body button{
+  width: 60%;
+  height: 56px;
+  color:#fff;
+  background:#273327;
+  font-size: 24px;
+  border: none;
+  border-radius: 30px;
+}
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
