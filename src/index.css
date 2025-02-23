@@ -5,9 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #aee6ae;
+  background-image: linear-gradient(0deg, rgba(233, 240, 250, 1), rgba(180, 208, 239, 1));
   color:#131a13;
 }
+
 .roulette-body{
   display: grid;
   place-content: center;

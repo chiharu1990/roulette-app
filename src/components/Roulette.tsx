@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
 export const Roulette = () => {
-    const [displayName, setDisplayName] = useState<string>('なまえ');
+    const [displayName, setDisplayName] = useState<string>('');
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [names, setNames] =  useState<string[]>([]);
+    const [history, setHistory] = useState<string[]>([]);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const counter = useRef<number>(0);
 
@@ -18,22 +19,32 @@ export const Roulette = () => {
             localStorage.setItem("names", JSON.stringify(defaultNames));
         }
     },[]);
+    // 履歴のリストをローカルストレージから読み込む
+    useEffect(() => {
+        const storedHistory = localStorage.getItem("history");
+        if(storedHistory) {
+            setHistory(JSON.parse(storedHistory));
+        }
+    },[])
 
-    // 名前のリストが更新されるたびにローカルストレージに保存
+    // 名前のリストと履歴が更新されるたびにローカルストレージに保存
     useEffect(() => {
         if (names.length > 0) {
             localStorage.setItem("names", JSON.stringify(names));
         }
-    },[names]);
+        if(history.length > 0) {
+            localStorage.setItem("history", JSON.stringify(history))
+        }
+    },[names,history]);
 
     // ルーレットを開始する関数
     const startRoulette = () => {
         if (isRunning) return; // すでに動いていたら何もしない
-
         setIsRunning(true);
 
         intervalRef.current = setInterval(() => {
-            setDisplayName(names[counter.current % names.length]);
+            const randomIndex = Math.floor(Math.random() * names.length)
+            setDisplayName(names[randomIndex]);
             counter.current++;
         }, 100);
     };
@@ -48,8 +59,16 @@ export const Roulette = () => {
         }
         setIsRunning(false);
 
-        setDisplayName(names[Math.floor(Math.random() * names.length)]);
+        const randomName = names[Math.floor(Math.random() * names.length)];
+
+        setDisplayName(randomName);
+        // 履歴に追加
+        setHistory(prevHistory => {
+            const updateHistory = [randomName, ...prevHistory];
+            return updateHistory.slice(0,10);
+        });
     };
+
     // 名前を追加する関数
     const addName = (newName: string) => {
         setNames(prevNames => [...prevNames, newName]);
@@ -93,6 +112,14 @@ export const Roulette = () => {
                     } }>変更</button>
                 </div>
                 ))}
+            </div>
+            <div>
+                <h2>りれき</h2>
+                <ol>
+                    {history.map((name, index) => (
+                        <li key={index}>{name}</li>
+                    ))}
+                </ol>
             </div>
         </>
     );
