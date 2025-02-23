@@ -1,0 +1,67 @@
+.container{
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    width: 100%;
+    height: 100vh;
+  }
+  .add-name-wrapper{
+    background-color: rgb(162, 195, 233);
+    display: grid;
+    place-content: center;
+    place-items: center;
+
+    &:hover{
+        opacity: 0.7;
+        cursor: pointer;
+    }
+    &.is-close{
+        width: 56px;
+        transition: all ease-in 3s;
+        .display-content{
+            display: none;
+        }
+    }
+    &.is-open{
+        
+        display: block;
+    }
+  }
+  
+  .roulette-body{
+    display: grid;
+    place-content: center;
+    place-items: center;
+    padding: 0 48px;
+  
+  }
+  .history-wrapper{
+    background-color: rgb(162, 195, 233);
+    display: grid;
+    place-content: center;
+    place-items: center;
+  }
+  
+  h1{
+    margin-bottom: 48px;
+  }
+  
+  .name{
+    font-size: 8em;
+    border: solid 2px rgb(9, 45, 87);
+    margin: 0 0 48px;
+    padding: 2rem 4rem;
+    border-radius: 20px;
+    background: #fff;
+    text-align: center;
+    width: 4em;
+  }
+  
+  .roulette-body button{
+    width: 60%;
+    height: 56px;
+    color:#fff;
+    background: rgb(9, 45, 87);
+    font-size: 24px;
+    border: none;
+    border-radius: 30px;
+  }

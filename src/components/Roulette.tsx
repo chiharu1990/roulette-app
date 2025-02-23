@@ -1,10 +1,15 @@
+import React from "react";
 import { useState, useRef, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
+
 
 export const Roulette = () => {
     const [displayName, setDisplayName] = useState<string>('');
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [names, setNames] =  useState<string[]>([]);
     const [history, setHistory] = useState<string[]>([]);
+    const [displayAddNameContainer, setDisplayAddNameContainer] = useState<boolean>(false)
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const counter = useRef<number>(0);
 
@@ -63,7 +68,7 @@ export const Roulette = () => {
 
         setDisplayName(randomName);
         // 履歴に追加
-        setHistory(prevHistory => {
+        setHistory((prevHistory: string[]) => {
             const updateHistory = [randomName, ...prevHistory];
             return updateHistory.slice(0,10);
         });
@@ -71,19 +76,48 @@ export const Roulette = () => {
 
     // 名前を追加する関数
     const addName = (newName: string) => {
-        setNames(prevNames => [...prevNames, newName]);
+        setNames((prevNames: string[]) => [...prevNames, newName]);
     }
     // 名前を削除する関数
     const removeName = (nameToRemove: string) => {
-        setNames(prevNames => prevNames.filter(name => name !== nameToRemove));
+        setNames((prevNames: string[]) => prevNames.filter(name => name !== nameToRemove));
     }
     // 名前を編集する関数
     const changeName = (oldName: string, newName: string) => {
-        setNames(prevNames => prevNames.map(name => name === oldName ? newName : name));
+        setNames((prevNames: string[]) => prevNames.map(name => name === oldName ? newName : name));
     };
 
     return (
-        <>
+        <div className="container">
+            <div className={displayAddNameContainer? "add-name-wrapper is-open" : "add-name-wrapper is-close"} onClick={() => setDisplayAddNameContainer(!displayAddNameContainer)}>
+                <FontAwesomeIcon icon={faPlus} size="2x"/>
+                <div className="display-content">
+                    <h2>名前を追加</h2>
+                    <div>
+                        <input type="text" id="new-name" placeholder="なまえ"/>
+                        <button onClick={() => {
+                            const newName = (document.getElementById("new-name")as HTMLInputElement).value;
+                            addName(newName);
+                            (document.getElementById("new-name")as HTMLInputElement).value = "";
+                        }}>追加</button>
+                    </div>
+
+                    <h2>リスト</h2>
+                    {names.map((name) => (
+                    <div key={name}>
+                        <span>{name}</span>
+                        <button onClick={() => removeName(name)}>削除</button>
+                        <button onClick={() => {
+                            const newName = prompt("新しい名前を入力してください:", name)
+                            if(newName){
+                                changeName(name,newName);
+                            }
+                        } }>変更</button>
+                    </div>
+                    ))}
+                </div>
+
+            </div>
             <div className="roulette-body">
                 <h1>朝会指名ルーレット</h1>
                 <div className="name">{displayName}</div>
@@ -91,29 +125,9 @@ export const Roulette = () => {
                     {isRunning ? "ストップ" : "スタート"}
                 </button>
             </div>
-            <div>
-                <h2>名前を追加</h2>
-                <input type="text" id="new-name" placeholder="なまえ"/>
-                <button onClick={() => {
-                    const newName = (document.getElementById("new-name")as HTMLInputElement).value;
-                    addName(newName);
-                    (document.getElementById("new-name")as HTMLInputElement).value = "";
-                }}>追加</button>
-                <h2>リスト</h2>
-                {names.map((name) => (
-                <div key={name}>
-                    <span>{name}</span>
-                    <button onClick={() => removeName(name)}>削除</button>
-                    <button onClick={() => {
-                        const newName = prompt("新しい名前を入力してください:", name)
-                        if(newName){
-                            changeName(name,newName);
-                        }
-                    } }>変更</button>
-                </div>
-                ))}
-            </div>
-            <div>
+            <div className="history-wrapper">
+                <FontAwesomeIcon icon={faClockRotateLeft} size="2x"/>
+
                 <h2>りれき</h2>
                 <ol>
                     {history.map((name, index) => (
@@ -121,6 +135,6 @@ export const Roulette = () => {
                     ))}
                 </ol>
             </div>
-        </>
+        </div>
     );
 };
