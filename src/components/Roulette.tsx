@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faClockRotateLeft, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 
 
 export const Roulette = () => {
@@ -9,7 +9,9 @@ export const Roulette = () => {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [names, setNames] =  useState<string[]>([]);
     const [history, setHistory] = useState<string[]>([]);
-    const [displayAddNameContainer, setDisplayAddNameContainer] = useState<boolean>(false)
+    const [displayAddNameContainer, setDisplayAddNameContainer] = useState<boolean>(false);
+    const [displayHistoryContainer, setDisplayHistoryContainer] = useState<boolean>(false);
+
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const counter = useRef<number>(0);
 
@@ -89,8 +91,7 @@ export const Roulette = () => {
 
     return (
         <div className="container">
-            <div className={displayAddNameContainer? "add-name-wrapper is-open" : "add-name-wrapper is-close"} onClick={() => setDisplayAddNameContainer(!displayAddNameContainer)}>
-                <FontAwesomeIcon icon={faPlus} size="2x"/>
+            <div className={displayAddNameContainer? "add-name-container is-open" : "add-name-container is-close"}>
                 <div className="display-content">
                     <h2>名前を追加</h2>
                     <div>
@@ -103,20 +104,24 @@ export const Roulette = () => {
                     </div>
 
                     <h2>リスト</h2>
-                    {names.map((name) => (
-                    <div key={name}>
-                        <span>{name}</span>
-                        <button onClick={() => removeName(name)}>削除</button>
-                        <button onClick={() => {
-                            const newName = prompt("新しい名前を入力してください:", name)
-                            if(newName){
-                                changeName(name,newName);
-                            }
-                        } }>変更</button>
-                    </div>
-                    ))}
+                    <ul>
+                        {names.map((name) => (
+                        <li key={name}>
+                            <span>{name}</span>
+                            <button onClick={() => removeName(name)}>削除</button>
+                            <button onClick={() => {
+                                const newName = prompt("新しい名前を入力してください:", name)
+                                if(newName){
+                                    changeName(name,newName);
+                                }
+                            } }>変更</button>
+                        </li>
+                        ))}
+                    </ul>
                 </div>
-
+                <div className="list-display-button" onClick={() => setDisplayAddNameContainer(!displayAddNameContainer)}>
+                    {displayAddNameContainer?<FontAwesomeIcon icon={faChevronLeft} size="2x" /> : <FontAwesomeIcon icon={faPlus} size="2x"/>}
+                </div>
             </div>
             <div className="roulette-body">
                 <h1>朝会指名ルーレット</h1>
@@ -125,15 +130,18 @@ export const Roulette = () => {
                     {isRunning ? "ストップ" : "スタート"}
                 </button>
             </div>
-            <div className="history-wrapper">
-                <FontAwesomeIcon icon={faClockRotateLeft} size="2x"/>
-
-                <h2>りれき</h2>
-                <ol>
-                    {history.map((name, index) => (
-                        <li key={index}>{name}</li>
-                    ))}
-                </ol>
+            <div className={displayHistoryContainer? "history-container is-open" : "history-container is-close"}>
+                <div className="history-display-button" onClick={() => setDisplayHistoryContainer(!displayHistoryContainer)}>
+                    <FontAwesomeIcon icon={faClockRotateLeft} size="2x"/>
+                </div>
+                <div className="history-list">
+                    <h2>りれき</h2>
+                    <ol>
+                        {history.map((name, index) => (
+                            <li key={index}>{name}</li>
+                        ))}
+                    </ol>
+                </div>
             </div>
         </div>
     );
