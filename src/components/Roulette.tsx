@@ -1,17 +1,15 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faClockRotateLeft, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
-
+import { faPlus, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { History } from './History'
 
 export const Roulette = () => {
     const [displayName, setDisplayName] = useState<string>('');
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [names, setNames] =  useState<string[]>([]);
-    const [history, setHistory] = useState<string[]>([]);
     const [displayAddNameContainer, setDisplayAddNameContainer] = useState<boolean>(false);
-    const [displayHistoryContainer, setDisplayHistoryContainer] = useState<boolean>(false);
-
+    const [history, setHistory] = useState<string[]>([]);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const counter = useRef<number>(0);
 
@@ -130,19 +128,7 @@ export const Roulette = () => {
                     {isRunning ? "ストップ" : "スタート"}
                 </button>
             </div>
-            <div className={displayHistoryContainer? "history-container is-open" : "history-container is-close"}>
-                <div className="history-display-button" onClick={() => setDisplayHistoryContainer(!displayHistoryContainer)}>
-                    <FontAwesomeIcon icon={faClockRotateLeft} size="2x"/>
-                </div>
-                <div className="history-list">
-                    <h2>りれき</h2>
-                    <ol>
-                        {history.map((name, index) => (
-                            <li key={index}>{name}</li>
-                        ))}
-                    </ol>
-                </div>
-            </div>
+            <History history={history} />
         </div>
     );
 };
