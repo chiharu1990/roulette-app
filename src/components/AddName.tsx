@@ -34,22 +34,23 @@ return(
                         (document.getElementById("new-name")as HTMLInputElement).value = "";
                     }}>追加</button>
                 </div>
-
-                <h2>リスト</h2>
-                <ul>
-                    {names.map((name) => (
-                    <li key={name}>
-                        <span>{name}</span>
-                        <button onClick={() => removeName(name)}>削除</button>
-                        <button onClick={() => {
-                            const newName = prompt("新しい名前を入力してください:", name)
-                            if(newName){
-                                changeName(name,newName);
-                            }
-                        } }>変更</button>
-                    </li>
-                    ))}
-                </ul>
+                <div className="name-list">
+                    <h2>リスト</h2>
+                    <ul>
+                        {names.map((name) => (
+                        <li key={name}>
+                            <span>{name}</span>
+                            <button onClick={() => removeName(name)}>削除</button>
+                            <button onClick={() => {
+                                const newName = prompt("新しい名前を入力してください:", name)
+                                if(newName){
+                                    changeName(name,newName);
+                                }
+                            } }>変更</button>
+                        </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
             <div className="list-display-button" onClick={() => setDisplayAddNameContainer(!displayAddNameContainer)}>
                 {displayAddNameContainer?<FontAwesomeIcon icon={faChevronLeft} size="2x" /> : <FontAwesomeIcon icon={faPlus} size="2x"/>}
