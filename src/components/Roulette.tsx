@@ -2,43 +2,51 @@ import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { History } from './History'
 import { AddName } from "./AddName";
+import { collection, addDoc, getDocs, query, limit, orderBy } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { getNamesFromFirestore } from "../firebase/firestoreFuctions";
 
 export const Roulette = () => {
     const [displayName, setDisplayName] = useState<string>('');
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [names, setNames] =  useState<string[]>([]);
+    const [names, setNames] =  useState<{ id: string; name: string }[]>([]);
     const [history, setHistory] = useState<string[]>([]);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const counter = useRef<number>(0);
 
-    // 名前のリストをローカルストレージから読み込む
-    useEffect(() => {
-        const storedNames = localStorage.getItem("names");
-        if (storedNames) {
-            setNames(JSON.parse(storedNames));
-        } else {
-            const defaultNames = ["なまえ1", "なまえ2", "なまえ3", "なまえ4", "なまえ5"];
-            setNames(defaultNames);
-            localStorage.setItem("names", JSON.stringify(defaultNames));
-        }
-    },[]);
-    // 履歴のリストをローカルストレージから読み込む
-    useEffect(() => {
-        const storedHistory = localStorage.getItem("history");
-        if(storedHistory) {
-            setHistory(JSON.parse(storedHistory));
-        }
-    },[])
 
-    // 名前のリストと履歴が更新されるたびにローカルストレージに保存
     useEffect(() => {
-        if (names.length > 0) {
-            localStorage.setItem("names", JSON.stringify(names));
+        const fetchNames = async () => {
+            const firestoreNames = await getNamesFromFirestore();
+            setNames(firestoreNames);
+        };
+        fetchNames();
+    }, []);
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            const q = query(
+                collection(db, "history"),
+                orderBy("timestamp", "desc"),
+                limit(10)
+            );
+            const querySnapshot = await getDocs(q);
+            const historyData = querySnapshot.docs.map(doc => doc.data().name);
+            setHistory(historyData);
+        };
+        fetchHistory();
+    })
+
+    const saveHistoryToFirestore = async (name: string) => {
+        try {
+            await addDoc(collection(db, "history"), {
+                name: name,
+                timestamp: new Date()
+            });
+        } catch(error) {
+            console.error("エラーが発生しました", error)
         }
-        if(history.length > 0) {
-            localStorage.setItem("history", JSON.stringify(history))
-        }
-    },[names,history]);
+    }
 
     // ルーレットを開始する関数
     const startRoulette = () => {
@@ -47,13 +55,13 @@ export const Roulette = () => {
 
         intervalRef.current = setInterval(() => {
             const randomIndex = Math.floor(Math.random() * names.length)
-            setDisplayName(names[randomIndex]);
+            setDisplayName(names[randomIndex].name);
             counter.current++;
         }, 100);
     };
 
     // ルーレットを停止する関数
-    const stopRoulette = () => {
+    const stopRoulette = async () => {
         if (!isRunning) return; // すでに止まっていたら何もしない
 
         if (intervalRef.current) {
@@ -62,14 +70,20 @@ export const Roulette = () => {
         }
         setIsRunning(false);
 
-        const randomName = names[Math.floor(Math.random() * names.length)];
+        const randomName = names[Math.floor(Math.random() * names.length)].name;
 
         setDisplayName(randomName);
+
         // 履歴に追加
-        setHistory((prevHistory: string[]) => {
-            const updateHistory = [randomName, ...prevHistory];
-            return updateHistory.slice(0,10);
-        });
+        await saveHistoryToFirestore(randomName);
+        const q = query(
+            collection(db, "history"),
+            orderBy("timestamp", "desc"),
+            limit(10)
+        );
+        const querySnapshot = await getDocs(q);
+        const historyData = querySnapshot.docs.map(doc => doc.data().name);
+        setHistory(historyData);
     };
 
     return (

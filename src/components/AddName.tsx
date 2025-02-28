@@ -1,25 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { addNameToFirestore, getNamesFromFirestore, removeNameFromFirestore, updateNameInFirestore } from "../firebase/firestoreFuctions";
 
 interface NameProps {
-    names: string[];
-    setNames: React.Dispatch<React.SetStateAction<string[]>>;
+    names: {id: string; name: string}[];
+    setNames: React.Dispatch<React.SetStateAction< {id: string; name: string}[]>>;
 }
 
 export const AddName:React.FC<NameProps> = ({names, setNames}) => {
     const [displayAddNameContainer, setDisplayAddNameContainer] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchNames = async () => {
+            const firestoreNames = await getNamesFromFirestore();
+            setNames(firestoreNames);
+        };
+        fetchNames();
+    }, [setNames]);
+
+
     // 名前を追加する関数
-    const addName = (newName: string) => {
-        setNames((prevNames: string[]) => [...prevNames, newName]);
-    }
+    const addName = async (newName: string) => {
+        if(newName.trim() === "") return;
+        await addNameToFirestore(newName);
+        const firestoreNames = await getNamesFromFirestore();
+        setNames(firestoreNames);
+    };
     // 名前を削除する関数
-    const removeName = (nameToRemove: string) => {
-        setNames((prevNames: string[]) => prevNames.filter(name => name !== nameToRemove));
+    const removeName = async (id: string) => {
+        await removeNameFromFirestore(id);
+        const firestoreNames = await getNamesFromFirestore();
+        setNames(firestoreNames);
     }
     // 名前を編集する関数
-    const changeName = (oldName: string, newName: string) => {
-        setNames((prevNames: string[]) => prevNames.map(name => name === oldName ? newName : name));
+    const changeName = async(id: string, newName: string) => {
+        await updateNameInFirestore(id, newName);
+        const firestoreNames = await getNamesFromFirestore();
+        setNames(firestoreNames);
     };
 return(
     <>
@@ -37,14 +55,14 @@ return(
                 <div className="name-list">
                     <h2>リスト</h2>
                     <ul>
-                        {names.map((name) => (
-                        <li key={name}>
+                        {names.map(({id,name}) => (
+                        <li key={id}>
                             <span>{name}</span>
-                            <button onClick={() => removeName(name)}>削除</button>
+                            <button onClick={() => removeName(id)}>削除</button>
                             <button onClick={() => {
                                 const newName = prompt("新しい名前を入力してください:", name)
                                 if(newName){
-                                    changeName(name,newName);
+                                    changeName(id,newName);
                                 }
                             } }>変更</button>
                         </li>
