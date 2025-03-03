@@ -1,150 +1,183 @@
 .container{
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-  }
-  .add-name-container{
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.add-name-container{
+  display: grid;
+  grid-auto-flow: column;
+  place-content: center;
+  place-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  .display-content{
+    width: 256px;
+    height: 100vh;
+    padding: 0 16px;
     display: grid;
-    grid-auto-flow: column;
+    place-content: center;
+    transition: all ease-in .3s;
+    background-color: rgb(162, 195, 233);
+    input{
+      width: 13em;
+      height: 32px;
+      margin: 0 16px 0 0;
+    }
+    button{
+      height: 32px;
+      color: #fff;
+      background: rgb(9, 45, 87);
+      border: none;
+    }
+    .name-list{
+      margin-top: 32px;
+    }
+    ul{
+      padding: 0 0 0 1.6em;
+      li{
+        margin: 8px 0;
+          span{
+            display: inline-block;
+            width: 8em;
+          }
+          button{
+            margin: 0 4px;
+          }
+      }
+    }
+  }
+  .list-display-button{
+    display: grid;
     place-content: center;
     place-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
+    width: 56px;
+    height: 100vh;
+    background-color: rgb(162, 195, 233);
+    transition: all ease-in .3s;
+    &:hover{
+      background-color: rgb(94, 153, 220);
+      cursor: pointer;
+    }
+  }
+
+  &.is-close{
     .display-content{
-      width: 256px;
-      height: 100vh;
-      padding: 0 16px;
-      display: grid;
-      place-content: center;
-      transition: all ease-in .3s;
-      background-color: rgb(162, 195, 233);
-      input{
-        width: 13em;
-        height: 32px;
-        margin: 0 16px 0 0;
-      }
-      button{
-        height: 32px;
-        color: #fff;
-        background: rgb(9, 45, 87);
-        border: none;
-      }
-      .name-list{
-        margin-top: 32px;
-      }
-      ul{
-        padding: 0 0 0 1.6em;
-        li{
-          margin: 8px 0;
-            span{
-              display: inline-block;
-              width: 8em;
-            }
-            button{
-              margin: 0 4px;
-            }
-        }
-      }
+      transform: translateX(-288px);
     }
     .list-display-button{
-      display: grid;
-      place-content: center;
-      place-items: center;
-      width: 56px;
-      height: 100vh;
-      background-color: rgb(162, 195, 233);
-      transition: all ease-in .3s;
-      &:hover{
-        background-color: rgb(94, 153, 220);
-        cursor: pointer;
-      }
+      transform: translateX(-288px);
     }
+  }
+}
 
-    &.is-close{
-      .display-content{
-        transform: translateX(-288px);
-      }
-      .list-display-button{
-        transform: translateX(-288px);
+.history-container{
+  display: grid;
+  grid-auto-flow: column;
+  place-content: center;
+  place-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 256px;
+  .history-display-button{
+    width: 56px;
+    height: 100vh;
+    display: grid;
+    place-content: center;
+    place-items: center;
+    transition: all ease-in .3s;
+    background-color: rgb(162, 195, 233);
+    &:hover{
+      background-color: rgb(94, 153, 220);
+      cursor: pointer;
+    }
+  }
+  .history-list{
+    display: grid;
+    place-content: center;
+    width: 256px;
+    height:  100vh;
+    background-color: rgb(162, 195, 233);
+    transition: all ease-in .3s;
+    ol{
+      padding: 0 0 0 2em;
+      li{
+        width: 8em;
       }
     }
   }
-
-  .history-container{
-    display: grid;
-    grid-auto-flow: column;
-    place-content: center;
-    place-items: center;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 256px;
+  &.is-close{
     .history-display-button{
-      width: 56px;
-      height: 100vh;
-      display: grid;
-      place-content: center;
-      place-items: center;
-      transition: all ease-in .3s;
-      background-color: rgb(162, 195, 233);
-      &:hover{
-        background-color: rgb(94, 153, 220);
-        cursor: pointer;
-      }
+      transform: translateX(228px);
     }
     .history-list{
-      display: grid;
-      place-content: center;
-      width: 256px;
-      height:  100vh;
-      background-color: rgb(162, 195, 233);
-      transition: all ease-in .3s;
-      ol{
-        padding: 0 0 0 2em;
-        li{
-          width: 8em;
-        }
-      }
-    }
-    &.is-close{
-      .history-display-button{
-        transform: translateX(228px);
-      }
-      .history-list{
-        transform: translateX(228px);
-      }
+      transform: translateX(228px);
     }
   }
+}
 
-  .roulette-body{
-    display: grid;
-    place-content: center;
-    place-items: center;
-    height: 100vh;
-    padding: 0 48px;
+.roulette-body{
+  display: grid;
+  place-content: center;
+  place-items: center;
+  height: 100vh;
+  padding: 0 48px;
+}
+
+h1{
+  margin-bottom: 48px;
+}
+
+.name{
+  font-size: 4em;
+  border: solid 2px rgb(9, 45, 87);
+  margin: 0 0 48px;
+  padding: 2rem 4rem;
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+}
+
+.roulette-body button{
+  width: 420px;
+  height: 56px;
+  color:#fff;
+  background: rgb(9, 45, 87);
+  font-size: 24px;
+  border: none;
+  border-radius: 30px;
+}
+.roulette-body .logout-btn{
+  height: 32px;
+  color:#fff;
+  background: rgb(87, 93, 99);
+  margin-top: 72px;
+  border: none;
+  font-size: 16px;
+}
+
+
+.login{
+  display: grid;
+  place-content: center;
+  height: 100vh;
+  text-align: center;
+  box-sizing: border-box;;
+  input{
+    height: 32px;
+    margin: 8px 32px;
+    border: solid 1px rgb(9, 45, 87);
+    padding: 0 8px;
   }
-
-  h1{
-    margin-bottom: 48px;
-  }
-
-  .name{
-    font-size: 8em;
-    border: solid 2px rgb(9, 45, 87);
-    margin: 0 0 48px;
-    padding: 2rem 4rem;
-    border-radius: 20px;
-    background: #fff;
-    text-align: center;
-  }
-
-  .roulette-body button{
+  button{
     width: 420px;
     height: 56px;
     color:#fff;
     background: rgb(9, 45, 87);
-    font-size: 24px;
+    margin: 32px;
     border: none;
-    border-radius: 30px;
   }
+}
+
+

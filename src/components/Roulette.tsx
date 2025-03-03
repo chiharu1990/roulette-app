@@ -3,8 +3,10 @@ import { useState, useRef, useEffect } from "react";
 import { History } from './History'
 import { AddName } from "./AddName";
 import { collection, addDoc, getDocs, query, limit, orderBy } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db, auth } from "../firebase/firebase";
 import { getNamesFromFirestore } from "../firebase/firestoreFuctions";
+import { onAuthStateChanged } from "firebase/auth";
+
 
 export const Roulette = () => {
     const [displayName, setDisplayName] = useState<string>('');
@@ -14,6 +16,16 @@ export const Roulette = () => {
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const counter = useRef<number>(0);
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                if(window.location.reload){
+                    window.location.reload();
+                }
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         const fetchNames = async () => {
@@ -35,7 +47,7 @@ export const Roulette = () => {
             setHistory(historyData);
         };
         fetchHistory();
-    })
+    },[])
 
     const saveHistoryToFirestore = async (name: string) => {
         try {
@@ -64,6 +76,12 @@ export const Roulette = () => {
     const stopRoulette = async () => {
         if (!isRunning) return; // すでに止まっていたら何もしない
 
+        if (names.length === 0) {
+            alert("名前がありません！");
+            setIsRunning(false);
+            return;
+        }
+
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
@@ -71,19 +89,10 @@ export const Roulette = () => {
         setIsRunning(false);
 
         const randomName = names[Math.floor(Math.random() * names.length)].name;
-
         setDisplayName(randomName);
 
-        // 履歴に追加
         await saveHistoryToFirestore(randomName);
-        const q = query(
-            collection(db, "history"),
-            orderBy("timestamp", "desc"),
-            limit(10)
-        );
-        const querySnapshot = await getDocs(q);
-        const historyData = querySnapshot.docs.map(doc => doc.data().name);
-        setHistory(historyData);
+        setHistory((prev) => [randomName, ...prev].slice(0, 10));
     };
 
     return (
@@ -95,6 +104,7 @@ export const Roulette = () => {
                 <button onClick={isRunning ? stopRoulette : startRoulette}>
                     {isRunning ? "ストップ" : "スタート"}
                 </button>
+                <button className="logout-btn" onClick={() => auth.signOut()}>ログアウト</button>
             </div>
             <History history={history} />
         </div>
