@@ -14,24 +14,19 @@ type List = {
     id: string;
     name: string;
     members: Member[];
-    originalMembers?: Member[]; // 追加
+    originalMembers?: Member[];
 };
 
 export const Roulette = () => {
     const [displayName, setDisplayName] = useState<string>('');
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const counter = useRef<number>(0);
     const [selectedListId, setSelectedListId] = useState<string>("");
     const [lists, setLists] = useState<{ id: string; name: string; members: Member[] }[]>([]);
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-    // 元のリストを保存
-    const originalLists = useRef<{ id: string; name: string; members: Member[] }[]>([]);
-
     const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState<string>("");
-
     const [newMemberName, setNewMemberName] = useState<string>("");
+    const counter = useRef<number>(0);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -49,7 +44,7 @@ export const Roulette = () => {
             const listsData = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
-            })) as List[]; // 型を修正
+            })) as List[];
 
             // **Firestoreに `originalMembers` がない場合は作成**
             listsData.forEach(async (list) => {
@@ -164,7 +159,7 @@ export const Roulette = () => {
             });
 
             // ローカルのリストも更新
-            setLists(lists.map(list => 
+            setLists(lists.map(list =>
                 list.id === selectedListId ? { ...list, members: updatedMembers } : list
             ));
         };
@@ -271,9 +266,7 @@ export const Roulette = () => {
                             ))}
                     </ul>
                     </div>
-
                 </div>
-
             </div>
             <div className="roulette-body">
                 <h1>ルーレット</h1>
