@@ -10,15 +10,24 @@ type Member = {
     hasWon?: boolean;
 };
 
-const initialMembers: Member[] = originalMembersData.map((m) => ({
-    ...m,
-    hasWon: false,
-}));
+const STORAGE_KEY = "roulette_members";
+
+const getInitialMembers = (): Member[] => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+        try {
+            return JSON.parse(stored);
+        } catch {
+            // fall through to default
+        }
+    }
+    return originalMembersData.map((m) => ({ ...m, hasWon: false }));
+};
 
 export const Roulette = () => {
     const [displayName, setDisplayName] = useState<string>('');
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [members, setMembers] = useState<Member[]>(initialMembers);
+    const [members, setMembers] = useState<Member[]>(getInitialMembers);
     const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState<string>("");
     const [newMemberName, setNewMemberName] = useState<string>("");
@@ -32,6 +41,10 @@ export const Roulette = () => {
         });
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+    }, [members]);
 
     const startRoulette = () => {
         if (isRunning) return;
